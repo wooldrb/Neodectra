@@ -1,0 +1,51 @@
+!!!=====VIDEO DEMOS=====!!!
+http://www.youtube.com/watch?v=vBjTVIfKTpc - Neodectra - Light Reactive LEDs with Arduino
+http://www.youtube.com/watch?v=6kxe193etWc - Neodectra - VUMeter Mode Demo
+!!!====================!!!
+
+/* README for Neodectra */
+Neodectra is a custom firmware for the Arduino intended for use with the
+Audectra client for Windows and AdaFruit NeoPixel strips. This firmware was
+heavily based off of example code provided by both Audectra itself and the
+NeoPixel tutorials. However, it has evolved to where I consider Neodectra
+completely independent of either of those projects.
+
+It includes some custom routines for displaying the data provided by Audectra
+in a few unique ways not implemented by the standard Audectra firmware.
+
+
+==/* INSTALL */==
+Neodectra:
+Download and install the FastSPI libraries into your Arduino IDE. This branch
+was coded with FastSPI_LED2 RC5. https://code.google.com/p/fastspi/
+
+Open the INO file in the Arduino IDE.
+
+There are a few things to change in config.h:
+	+ DATAPIN, change this to the PIN your NeoPixel strip is wired to on the Arduino
+	+ STRIPLEN, change this to the number of LEDs your NeoPixel strip has
+
+Upload to the Arduino.
+================================================================================
+
+
+==/* USING */==
+Download and install the Audectra client:
+http://www.audectra.com/downloads/ [ONLY v1.0.0 HAS BEEN TESTED!]
+
+Start the client and select the COM port your Arduino is connected to.
+
+Play ALL the music!
+================================================================================
+
+/* NOTES */
+None at this time.
+
+/* SUPPORT */
+Please email brandon+Neodectra[at]hive13.org for any questions. Happy hacking!
+
+/* LINKS */
+Audectra: http://www.audectra.com/
+  Client: http://www.audectra.com/downloads/ [ONLY v1.0.0 HAS BEEN TESTED!]
+
+FastSPI2: https://fastspi.googlecode.com/files/FastSPI_LED2.RC5.zip

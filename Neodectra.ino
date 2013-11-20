@@ -1,5 +1,6 @@
 /******************************************************************************
-* Neodectra - Unofficial compatible firmware for use with Audectra [http://www.audectra.com/]
+* Neodectra - Unofficial compatible firmware for use with Audectra
+*             [http://www.audectra.com/]
 *
 * Firmware written by Brandon Wooldridge [brandon+neodectra@hive13.org]
 * Audectra written by A1i3n37 [support@audectra.com]
@@ -13,6 +14,7 @@
 * DESC: Our main codebase for the Arduino
 *
 ******************************************************************************/
+// FIRMWARE VERSION
 
 // INCLUDES
 #include "FastSPI_LED2.h"
@@ -24,7 +26,7 @@ typedef struct
 {
   unsigned long prevTime;
   unsigned long currTime;
-  boolean		Increment;
+  boolean	Increment;
 } DelayTimer;
 
 // FUNCTION PROTOTYPES
@@ -35,6 +37,7 @@ void fadeAfterDelay( DelayTimer *dTimer, uint8_t fDelay, uint8_t fPercentage );
 #define	LOGFILE			"AUDECTRA.TXT"
 #define POTPIN			A0
 #define POT_READ		0  // Read from POT connected to POTPIN instead of having a constant value. 0 = disabled, 1 = enabled
+#define AUDECTRA_VERSION        1
 
 // GLOBAL VARIABLES
 CRGB ledStrip[STRIP_LENGTH];
@@ -45,7 +48,7 @@ boolean SDLogging = false;
 File logFileHandle;
 
 void setup() {
-  LEDS.setBrightness(255);  // between 0 and 255, default 25% brightness (64)
+  LEDS.setBrightness(BRIGHTNESS);  // between 0 and 255, default 25% brightness (64)
   LEDS.addLeds<CHIPSET, DATAPIN, PIXEL_ORDER>(ledStrip, STRIP_LENGTH);  // initialize our LED object
   memset(ledStrip, 0,  STRIP_LENGTH * sizeof(struct CRGB));  // set all LEDs to off
 
@@ -71,23 +74,26 @@ void setup() {
 void loop() {
   UpdateDelay.currTime = LFODelay.currTime = FadeDelay.currTime = VUDelay.currTime = millis();
 
-  if( Serial.available () > 4 ) {
+  if( Serial.available() >= 4 ) {
+    
     if( SDLogging ) logFileHandle = SD.open(LOGFILE, FILE_WRITE);
-    char buffer[4];
-    for( int i = 0; i < 4; i++ ) buffer[i] = '\0';
-	
-
+    char buffer[4] = { '\0' };
     Serial.readBytes(buffer,4);  // read in our color values from the Audectra client
+    if( buffer[0] == 1 ) fwIdentify();  // identify ourselves as the proper COM device
+    
+    if( SDLogging ) {
+      logFileHandle.println("PKT_DTA: " + String(buffer[0], HEX) + " " + String(buffer[1], HEX) + " " + String(buffer[2], HEX) + " " + String(buffer[3], HEX));
+    }
 
     if( UpdateDelay.currTime - UpdateDelay.prevTime > SAMPLERATE ) {
       UpdateDelay.prevTime = UpdateDelay.currTime;
       
       /*** THIS IS WHERE YOU SET THE EFFECTS. UNCOMMENT THE EFFECT YOU WANT THEN COMMENT THE OLD ONE ***/
-      //colorSetAll( buffer[0], buffer[1], buffer[2] );
-      colorSetSplit( buffer[0], buffer[1], buffer[2], &Offset );
-      //colorSetVU( buffer[0], buffer[1], buffer[2], MASTER_GAIN );
-      //colorSetVUSplit( buffer[0], buffer[1], buffer[2] );
-      //colorSetGridX( buffer[0], buffer[1], buffer[2], 16, 18, &Offset );
+      //colorSetAll( buffer[0+AUDECTRA_VERSION], buffer[1+AUDECTRA_VERSION], buffer[2AUDECTRA_VERSION] );
+      colorSetSplit( buffer[0+AUDECTRA_VERSION], buffer[1+AUDECTRA_VERSION], buffer[2+AUDECTRA_VERSION], &Offset );
+      //colorSetVU( buffer[0+AUDECTRA_VERSION], buffer[1+AUDECTRA_VERSION], buffer[2+AUDECTRA_VERSION], MASTER_GAIN );
+      //colorSetVUSplit( buffer[0+AUDECTRA_VERSION], buffer[1+AUDECTRA_VERSION], buffer[2+AUDECTRA_VERSION] );
+      //colorSetGridX( buffer[0+AUDECTRA_VERSION], buffer[1+AUDECTRA_VERSION], buffer[2+AUDECTRA_VERSION], 9, 9, &Offset );
 
       if( LFODelay.currTime - LFODelay.prevTime > LFO_RATE ) {
         LFODelay.prevTime = LFODelay.currTime;
@@ -106,7 +112,7 @@ void loop() {
         ledStrip[pixel].fadeToBlackBy( FADE_PERCENT );
       }
       FastLED.show();
-  }
+    }
   }
 }
 
@@ -189,6 +195,11 @@ void colorSetGridX(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t xSize, uint
 
 
 // UTILITY FUNCTIONS
+void fwIdentify() {
+  Serial.println("DIYAudectra"); // ID
+  Serial.println("1.1.0");  // Firmware Version
+}
+
 unsigned int readPot() {
   unsigned int readVal = map(analogRead(POTPIN), 0, 1023, 0, MAX_VOLUME_RANGE);
   if( !POT_READ ) readVal = 3200;  // magic value that seems to work best

@@ -15,19 +15,19 @@
 ******************************************************************************/
 
 // ** CONFIG: FIRMWARE ID *****************************************************
-#define	ID		  "DIYAudectra"
-#define	FirmwareVersion	  "1.1.0"
+//const char* ID = "DIYAudectra";
+//const char* FirmwareVersion = "1.1.0";
 
 // ** CONFIG: GLOBAL **********************************************************
 #define	DATAPIN			6					// pin the LED data-in line is connected to on the Arduino
-#define	STRIP_LENGTH		30					// the number of LEDs we'll be controlling
+#define	STRIP_LENGTH		81					// the number of LEDs we'll be controlling
 #define STRIP_CENTER	        STRIP_LENGTH / 2
 #define	BAUDRATE		9600				// baud rate for serial/COM communication, usually 9600
-#define	SAMPLERATE		10					// how often we poll for data, in milliseconds
+#define	SAMPLERATE		1					// how often we poll for data, in milliseconds
 
 // ** CONFIG: FADE ************************************************************
-#define	FADE_DELAY		10
-#define	FADE_PERCENT	2
+#define	FADE_DELAY		5
+#define	FADE_PERCENT	        2
 
 // ** CONFIG: NETWORK *********************************************************
 //byte macAddr[] = { 0xA0, 0xAD, 0x78, 0x00, 0x00, 0x01 };  // MAC address, doesn't matter as long as it's unique
@@ -36,6 +36,7 @@
 // ** CONFIG: FASTSPI *********************************************************
 #define	CHIPSET			WS2811	// chipset we're planning on controlling (read FastSPI documentation)
 #define	PIXEL_ORDER		GRB		// led color pixel order, discovered by running FastSPI calibration sketch
+#define BRIGHTNESS              170
 
 // ** CONFIG: FUNCTIONS *******************************************************
 
@@ -50,5 +51,5 @@
 
 // ******** : LFO
 // Audectra Settings: Bass[90,2] - Mid[70,18] - High[34,32]
-#define LFO_RATE		102
+#define LFO_RATE		5
 
